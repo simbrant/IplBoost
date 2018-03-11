@@ -19,6 +19,7 @@ Simon Boge Brant
 Maintainer: Your Name <your@email.com>
 }
 \references{
+  References?
 }
 \keyword{ package }
 \seealso{
