@@ -97,11 +97,18 @@ double compute_ipl(NumericVector times, NumericVector status, NumericMatrix mat,
     // compute linear predictor / prognostic index
     NumericVector pi_s(n);
     NumericVector risk_s(n);
+    
+    //  for (int i=0; i<n; i++){
+    //  pi_s[i]  = sum(mat(i, _)*betas(s, _));
+    //}
     for (int i=0; i<n; i++){
-      for(int j=0; j<p; j++){
-        pi_s[i] += mat(i, j)*betas(s, j);
+      double this_pi = 0;
+      for (int j=0; j<p; j++){
+        this_pi += mat(i, j)*betas(s, j);
       }
+      pi_s[i] = this_pi;
     }
+    
     risk_s = exp(pi_s); // Rcpp sugar
     // Backwards cumsum of risk
     for (int i=n-2; i>=0; i--){

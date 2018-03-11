@@ -1,3 +1,5 @@
 useDynLib(IplBoost, .registration=TRUE)
 exportPattern("^[[:alpha:]]+")
 importFrom(Rcpp, evalCpp)
+import(Matrix)
+import(snowfall)
