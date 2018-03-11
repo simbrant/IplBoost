@@ -3,7 +3,7 @@
 \alias{IplBoost}
 \docType{package}
 \title{
-  A short title line describing what the package does
+  IplBoost: Sliding landmark models fitted via likelihood based boosting.
 }
 \description{
   A more detailed description of what the package does. A length

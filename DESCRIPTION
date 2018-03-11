@@ -1,11 +1,11 @@
 Package: IplBoost
 Type: Package
-Title: What the Package Does in One 'Title Case' Line
+Title: IplBoost: Landmark models fitted via likelihood-boosting
 Version: 1.0
 Date: 2018-03-09
-Author: Your Name
-Maintainer: Your Name <your@email.com>
-Description: One paragraph description of what the package does as one or more full sentences.
+Author: Simon Boge Brant
+Maintainer: Simon Boge Brant <simbran91t@gmail.com>
+Description: This package fits sliding landmark models via a likelihood-based boosting approach.
 License: GPL (>= 2)
 Imports: Rcpp (>= 0.12.15),
          Matrix (>= 1.2-11),
