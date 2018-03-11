@@ -14,13 +14,11 @@
   package, including the most important functions.
 }
 \author{
-Your Name, email optional.
+Simon Boge Brant
 
 Maintainer: Your Name <your@email.com>
 }
 \references{
-  This optional section can contain literature or other references for
-  background information.
 }
 \keyword{ package }
 \seealso{
