@@ -9,8 +9,7 @@
   A more detailed description of what the package does. A length
   of about one to five lines is recommended.
 
-  testing tex:
-  $\beta$
+  \eqn{\beta}
 }
 \details{
   This section should provide a more detailed overview of how to use the
