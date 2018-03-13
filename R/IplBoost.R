@@ -113,10 +113,10 @@ cv.IplBoost <- function(times, status, mat, lms, w, M, lambda, folds, verbose=FA
     mean(as.numeric(cvs))
   }
   cv.ipl.k <- function(betas, times, status, mat, lms, w){
-    #.compute_ipl(times=times[folds==k], status=status[folds==k], mat=mat[folds==k, ],
-    #             betas=betas, lms=lms, w=w, S=length(lms), n=length(times[folds==k]), p=dim(mat)[2])
-    ipl(times=times[folds==k], status=status[folds==k], mat=mat[folds==k, ],
-        betas=betas, lms=lms, w=w)
+    .compute_ipl(times=times[folds==k], status=status[folds==k], mat=mat[folds==k, ],
+                 betas=betas, lms=lms, w=w, S=length(lms), n=length(times[folds==k]), p=dim(mat)[2])
+    #ipl(times=times[folds==k], status=status[folds==k], mat=mat[folds==k, ],
+    #    betas=betas, lms=lms, w=w)
   }
   
   ipl.cv <- as.numeric(lapply(0:M, cv.ipl.m), folds=folds, times=times, status=status, mat=mat,
