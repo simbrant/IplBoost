@@ -70,7 +70,7 @@ IplBoost <- function(times, status, mat, lms, w, M, lambda, verbose=FALSE, stand
 
 
 cv.IplBoost <- function(times, status, mat, lms, w, M, lambda, folds, verbose=FALSE,
-                        standardise=TRUE, parallel=FALSE){
+                        standardise=TRUE, parallel=FALSE, which.ipl = "R"){
 
   ## This function performs K-fold cross-valitation for IplBoost,
   ## to tune the number of iterations
@@ -107,23 +107,36 @@ cv.IplBoost <- function(times, status, mat, lms, w, M, lambda, folds, verbose=FA
   
   
   # Compute the cross validated integrated partial likelihood
-  cv.ipl.m <- function(m, folds, times, status, mat, mods, lms, w){
-    cvs <- lapply(1:max(folds), function(k) cv.ipl.k(betas=as.matrix(mods[[k]]$estimates[[m+1]]),
+  cv.ipl.m <- function(m, folds, times, status, mat, mods, lms, w, which.ipl){
+    if (which.ipl == "R"){
+      cvs <- lapply(1:max(folds), function(k) cv.ipl.k_R(betas=as.matrix(mods[[k]]$estimates[[m+1]]),
+                                                           times=times[folds==k], status=status[folds==k], mat=mat[folds==k, ],
+                                                           lms=lms, w=w))
+    } else if (which.ipl == "C++"){
+      cvs <- lapply(1:max(folds), function(k) cv.ipl.k_cpp(betas=as.matrix(mods[[k]]$estimates[[m+1]]),
                                                 times=times[folds==k], status=status[folds==k], mat=mat[folds==k, ],
                                                 lms=lms, w=w))
-    mean(as.numeric(cvs))
+    } else {
+      stop("Wrongly specified ipl method, must be 'R' or 'C++'!")
+    }
+    return(mean(as.numeric(cvs)))
   }
-  cv.ipl.k <- function(betas, times, status, mat, lms, w){
+  cv.ipl.k_cpp <- function(betas, times, status, mat, lms, w){
     .compute_ipl(times=times, status=status, mat=mat,
-                 betas=betas, lms=lms, w=w, S=length(lms), n=length(times), p=dim(mat)[2])
+                 betas=betas, lms=lms, w=w, S=length(lms),
+                 n=length(times), p=dim(mat)[2])
   }
-  
+  cv.ipl.k_R <- function(betas, times, status, mat, lms, w){
+    ipl(times=times, status=status, mat=mat,
+        betas=betas, lms=lms, w=w)
+  }
+
   if (parallel){
     ipl.cv <- as.numeric(sfLapply(0:M, cv.ipl.m, folds=folds, times=times, status=status, mat=mat,
-                         mods=cv.mods, lms=lms, w=w))
-  } else {
-    ipl.cv <- as.numeric(lapply(0:M, cv.ipl.m, folds=folds, times=times, status=status, mat=mat,
-                                mods=cv.mods, lms=lms, w=w))
-  }
-  return(list(ipl.cv=ipl.cv, opt.m = which(ipl.cv == max(ipl.cv)) - 1))
+                                      mods=cv.mods, lms=lms, w=w, which.ipl=which.ipl))
+    } else {
+      ipl.cv <- as.numeric(lapply(0:M, cv.ipl.m, folds=folds, times=times, status=status, mat=mat,
+                                    mods=cv.mods, lms=lms, w=w, which.ipl=which.ipl))
+      }
+   return(list(ipl.cv=ipl.cv, opt.m = which(ipl.cv == max(ipl.cv)) - 1))
 }
