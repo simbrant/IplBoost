@@ -33,11 +33,11 @@ NumericVector compute_u_j(int j, NumericVector status, NumericMatrix mat, Numeri
   for (int s=0; s<S; s++){
     // Assume times are ordered
     int i = lmsind;
-    while (times[i] < lms[s]){
+    while (times[i] < lms[s] & i < n){
       i += 1;
     }
     lmsind = i;
-    while (times[i] <= lms[s] + w){
+    while (times[i] <= lms[s] + w & i < n){
       u[s] += status[i]*(mat(i, j-1) - S1j(i, s)/S0(i, s));
       i += 1;
     } 
@@ -71,11 +71,11 @@ NumericVector compute_negI_j(int j, NumericVector status, NumericVector times, N
   for (int s=0; s<S; s++){
     // Assume times are ordered
     int i = lmsind;
-    while (times[i] < lms[s]){
+    while (times[i] < lms[s] & i < n){
       i += 1;
     }
     lmsind = i;
-    while (times[i] <= lms[s] + w){
+    while (times[i] <= lms[s] + w & i < n){
       I[s] += status[i]*((S2j(i, s)*S0(i, s)- S1j(i, s)*S1j(i, s))/(S0(i, s)*S0(i, s)));
       i += 1;
     } 
