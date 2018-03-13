@@ -5,18 +5,18 @@
 ##############################################################################################
 
 
-ipl <- function(t, d, X, betas, lms, w) {
+ipl <- function(times, status, mat, betas, lms, w) {
   ######################################################
   # Van Houwelingens integrated partial log likelihood #
   ######################################################
-  pi_s <- X %*% t(betas)
-  indicator <- t(apply(as.matrix(t), MARGIN = 1, function(t, lm , w){t >= lm & t <= lm + w },
+  pi_s <- mat %*% t(betas)
+  indicator <- t(apply(as.matrix(times), MARGIN = 1, function(t, lm , w){t >= lm & t <= lm + w },
                        lm = lms, w = w))
-  part1 <- apply(pi_s * indicator, 1, sum)[order(t)]
-  part2 <- apply(log(apply(exp(pi_s[order(-t), ]), 2,
-                           cumsum)[order(-(1:length(t))), ])*indicator,
+  part1 <- apply(pi_s * indicator, 1, sum)[order(times)]
+  part2 <- apply(log(apply(exp(pi_s[order(-times), ]), 2,
+                           cumsum)[order(-(1:length(times))), ])*indicator,
                  1, sum)
-  return(sum(d[order(t)]*(part1 - part2)))
+  return(sum(status[order(times)]*(part1 - part2)))
 }
 
 
