@@ -111,7 +111,7 @@ cv.IplBoost <- function(times, status, mat, lms, w, M, lambda, folds, verbose=FA
   }
   cv.ipl.k <- function(k, betas){
     #.compute_ipl(times=times[folds==k], status=status[folds==k], mat=mat[folds==k, ],
-    #             betas=betas, lms=lms, w=w, S=length(lms), n=length(times), p=dim(mat)[2])
+    #             betas=betas, lms=lms, w=w, S=length(lms), n=length(times[folds==k]), p=dim(mat)[2])
     ipl(times=times[folds==k], status=status[folds==k], mat=mat[folds==k, ],
         betas=betas, lms=lms, w=w)
   }
