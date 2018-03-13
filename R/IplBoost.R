@@ -105,22 +105,25 @@ cv.IplBoost <- function(times, status, mat, lms, w, M, lambda, folds, verbose=FA
                                                                     lambda=lambda, standardise=FALSE, compute.ipl=FALSE)})
   }
   
+  
+  # Compute the cross validated integrated partial likelihood
   cv.ipl.m <- function(m, folds, times, status, mat, mods, lms, w){
     cvs <- lapply(1:max(folds), function(k) cv.ipl.k(betas=as.matrix(mods[[k]]$estimates[[m+1]]),
                                                 times=times[folds==k], status=status[folds==k], mat=mat[folds==k, ],
                                                 lms=lms, w=w))
-    print(cvs)
     mean(as.numeric(cvs))
   }
   cv.ipl.k <- function(betas, times, status, mat, lms, w){
     .compute_ipl(times=times, status=status, mat=mat,
                  betas=betas, lms=lms, w=w, S=length(lms), n=length(times), p=dim(mat)[2])
-    #ipl(times=times[folds==k], status=status[folds==k], mat=mat[folds==k, ],
-    #    betas=betas, lms=lms, w=w)
   }
   
-  ipl.cv <- as.numeric(lapply(0:M, cv.ipl.m, folds=folds, times=times, status=status, mat=mat,
-                       mods=cv.mods, lms=lms, w=w))
-
+  if (parallel){
+    ipl.cv <- as.numeric(sfLapply(0:M, cv.ipl.m, folds=folds, times=times, status=status, mat=mat,
+                         mods=cv.mods, lms=lms, w=w))
+  } else {
+    ipl.cv <- as.numeric(lapply(0:M, cv.ipl.m, folds=folds, times=times, status=status, mat=mat,
+                                mods=cv.mods, lms=lms, w=w))
+  }
   return(list(ipl.cv=ipl.cv, opt.m = which(ipl.cv == max(ipl.cv)) - 1))
 }
