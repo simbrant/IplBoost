@@ -86,7 +86,7 @@ cv.IplBoost <- function(times, status, mat, lms, w, M, lambda, folds, verbose=FA
   
   if(parallel){
     if (sfParallel()) {
-      cat("IPLBOOST Running in parallel mode on", sfCpus(), "nodes.\n")
+      cat("IplBoost Running in parallel mode on", sfCpus(), "nodes.\n")
       sfExportAll()
     }
     else{
@@ -109,10 +109,12 @@ cv.IplBoost <- function(times, status, mat, lms, w, M, lambda, folds, verbose=FA
     ipl.curr <- vector("numeric", max(folds))
     for (k in 1:max(folds)){
       
-      ipl.curr[k] <- ipl(times[folds==k], status[folds==k], mat[folds==k, ],
+      #ipl.curr[k] <- ipl(times[folds==k], status[folds==k], mat[folds==k, ],
+      #                            as.matrix(cv.mods[[k]]$estimates[[m+1]]),
+      #                            lms, w)
+      ipl.curr[k] <- .compute_ipl(times[folds==k], status[folds==k], mat[folds==k, ],
                                   as.matrix(cv.mods[[k]]$estimates[[m+1]]),
-                                  lms, w)
-    
+                                  lms, w, length(lms), length(times), dim(mat)[2])
     }
     ipl.cv[m+1] <- mean(ipl.curr)
   }
