@@ -120,7 +120,7 @@ cv.IplBoost <- function(times, status, mat, lms, w, M, lambda, folds, verbose=FA
   }
   
   ipl.cv <- as.numeric(lapply(0:M, cv.ipl.m), folds=folds, times=times, status=status, mat=mat,
-                       estimates=as.matrix(cv.mods[[k]]$estimates[[m+1]]), lms=lms, w=w)
+                       mods=cv.mods, lms=lms, w=w)
 
   return(list(ipl.cv=ipl.cv, opt.m = which(ipl.cv == max(ipl.cv)) - 1))
 }
