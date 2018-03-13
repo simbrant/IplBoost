@@ -27,7 +27,7 @@ NumericVector compute_u_j(int j, NumericVector status, NumericMatrix mat, Numeri
   */
   
   // Empty vector to fill with the first derivatives
-  NumericVector u(S);
+  NumericVector u(S, 0.0);
   
   int lmsind = 0;
   for (int s=0; s<S; s++){
@@ -65,7 +65,7 @@ NumericVector compute_negI_j(int j, NumericVector status, NumericVector times, N
   returns a (n x S) matrix
   */
   
-  NumericVector I(S);
+  NumericVector I(S, 0.0);
   
   int lmsind = 0;
   for (int s=0; s<S; s++){
@@ -90,13 +90,13 @@ NumericVector compute_negI_j(int j, NumericVector status, NumericVector times, N
 //[[Rcpp::export]]
 double compute_ipl(NumericVector times, NumericVector status, NumericMatrix mat, NumericMatrix betas,
                    NumericVector lms, double w, int S, int n, int p) {
-  double ipl = 0;
+  double ipl = 0.0;
   
   int lms_first_index = 0;
   for (int s=0; s<S; s++){
     // compute linear predictor / prognostic index
-    NumericVector pi_s(n);
-    NumericVector risk_s(n);
+    NumericVector pi_s(n, 0.0);
+    NumericVector risk_s(n, 0.0);
     
     //  for (int i=0; i<n; i++){
     //  pi_s[i]  = sum(mat(i, _)*betas(s, _));
