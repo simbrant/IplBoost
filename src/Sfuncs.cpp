@@ -22,23 +22,16 @@ NumericMatrix compute_S0(NumericMatrix risk, NumericVector times, int n,
    
    returns a (n x S) matrix
   */
-    
-    NumericMatrix S0 = clone(risk);
-    for (int s=0; s<S; s++){
-      NumericVector tmp = S0(_, s);
-      IntegerVector idx = seq_along(tmp) - 1;
-      std::sort(idx.begin(), idx.end(),[&](int i, int j){return times[i] < times[i];});
-      
-      tmp = tmp[idx];
-      for (int i=0; i<n; i++){
-        S0(i, s) = tmp[i];
-      }
-      
-      for (int i=n-2; i >= 0; i--){
-        S0(i, s) = S0(i, s) + S0(i+1, s);
-      }
+  
+  NumericMatrix S0 = clone(risk);
+  
+  for (int s=0; s<S; s++){
+    for (int i = n-2; i >= 0; i--){
+      S0(i, s) = S0(i+1, s) + S0(i, s);
     }
-    return S0;
+  }
+  
+  return S0;
 }
 
 // [[Rcpp::export]]
@@ -58,26 +51,19 @@ NumericMatrix compute_S1_j(int j, NumericMatrix risk, NumericVector times, Numer
    returns a (n x S) matrix
   */
   
-    NumericMatrix S1 = clone(risk);
-    NumericVector cov_vec = mat(_, j-1);
-    
-    for (int s=0; s<S; s++){
-      NumericVector tmp = S1(_, s);
-      IntegerVector idx = seq_along(tmp) - 1;
-      std::sort(idx.begin(), idx.end(), [&](int i, int j){return times[i] < times[i];});
-      
-      tmp = tmp[idx];
-      cov_vec = cov_vec[idx];
-      for (int i=0; i<n; i++){
-        S1(i, s) = cov_vec[i]*tmp[i];
-      }
-      
-      // cumsum   
-      for (int i=n-2; i >= 0; i--){
-        S1(i, s) = S1(i, s) + S1(i+1, s);
-      }
+  NumericMatrix S1 = NumericMatrix(n, S);
+  
+  for (int s=0; s<S; s++){
+    for (int i=0; i<n; i++){
+      S1(i, s) = mat(i, j-1)*risk(i, s);
     }
-    return S1;
+    
+    for (int i = n-2; i >= 0; i--){
+      S1(i, s) = S1(i+1, s) + S1(i, s);
+    }
+  }
+  
+  return S1;
 }
 
 
@@ -97,24 +83,15 @@ NumericMatrix compute_S2_j(int j, NumericMatrix risk, NumericVector times, Numer
    
    returns a (n x S) matrix
    */
-    NumericMatrix S2 = clone(risk);
-    NumericVector cov_vec = mat(_, j-1);
-    
-    for (int s=0; s<S; s++){
-      NumericVector tmp = S2(_, s);
-      IntegerVector idx = seq_along(tmp) - 1;
-      std::sort(idx.begin(), idx.end(), [&](int i, int j){return times[i] < times[i];});
-      
-      tmp = tmp[idx];
-      cov_vec = cov_vec[idx];
-      for (int i=0; i<n; i++){
-        S2(i, s) = cov_vec[i]*cov_vec[i]*tmp[i];
-      }
-      
-      // backwards cumsum 
-      for (int i=n-2; i >= 0; i--){
-        S2(i, s) = S2(i, s) + S2(i+1, s);
-      }
+  for (int s=0; s<S; s++){
+    for (int i=0; i<n; i++){
+      S2(i, s) = mat(i, j-1)*mat(i, j-1)*risk(i, s);
     }
-    return S2;
+    
+    for (int i = n-2; i >= 0; i--){
+      S2(i, s) = S2(i+1, s) + S2(i, s);
+    }
+  }
+  
+  return S2;
 }
