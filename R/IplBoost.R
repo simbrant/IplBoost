@@ -112,9 +112,9 @@ cv.IplBoost <- function(times, status, mat, lms, w, M, lambda, folds, verbose=FA
       #ipl.curr[k] <- ipl(times[folds==k], status[folds==k], mat[folds==k, ],
       #                            as.matrix(cv.mods[[k]]$estimates[[m+1]]),
       #                            lms, w)
-      ipl.curr[k] <- .compute_ipl(times[folds==k], status[folds==k], mat[folds==k, ],
-                                  as.matrix(cv.mods[[k]]$estimates[[m+1]]),
-                                  lms, w, length(lms), length(times), dim(mat)[2])
+      ipl.curr[k] <- .compute_ipl(times=times[folds==k], status=status[folds==k], mat=mat[folds==k, ],
+                                  betas=as.matrix(cv.mods[[k]]$estimates[[m+1]]),
+                                  lms=lms, w=w, S=length(lms), n=length(times), p=dim(mat)[2])
     }
     ipl.cv[m+1] <- mean(ipl.curr)
   }
