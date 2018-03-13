@@ -105,18 +105,22 @@ cv.IplBoost <- function(times, status, mat, lms, w, M, lambda, folds, verbose=FA
                                                                     lambda=lambda, standardise=FALSE, compute.ipl=FALSE)})
   }
   
-  cv.ipl.m <- function(m){
-    mean(as.numeric(lapply(1:max(folds),
-                           function(k) cv.ipl.k(k, as.matrix(cv.mods[[k]]$estimates[[m+1]])))))
+  cv.ipl.m <- function(m, folds, times, status, mat, mods, lms, w){
+    cvs <- lapply(1:max(folds), function(k) cv.ipl.k(betas=as.matrix(mods[[k]]$estimates[[m+1]]),
+                                                times=times[folds==k], status=status[folds==k], mat=mat[folds==k, ],
+                                                lms=lms, w=w),
+                  folds=folds, mods=mods, times=times, status=status, mat=mat, lms=lms, w=w)
+    mean(as.numeric(cvs))
   }
-  cv.ipl.k <- function(k, betas){
+  cv.ipl.k <- function(betas, times, status, mat, lms, w){
     #.compute_ipl(times=times[folds==k], status=status[folds==k], mat=mat[folds==k, ],
     #             betas=betas, lms=lms, w=w, S=length(lms), n=length(times[folds==k]), p=dim(mat)[2])
     ipl(times=times[folds==k], status=status[folds==k], mat=mat[folds==k, ],
         betas=betas, lms=lms, w=w)
   }
   
-  ipl.cv <- as.numeric(lapply(0:M, cv.ipl.m))
+  ipl.cv <- as.numeric(lapply(0:M, cv.ipl.m), folds=folds, times=times, status=status, mat=mat,
+                       estimates=as.matrix(cv.mods[[k]]$estimates[[m+1]]), lms=lms, w=w)
 
   return(list(ipl.cv=ipl.cv, opt.m = which(ipl.cv == max(ipl.cv)) - 1))
 }
