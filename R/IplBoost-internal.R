@@ -159,14 +159,14 @@ c(403L, 351L, -255867848L, -2132569278L, 1934840782L, 1073087047L,
   
   # Compute scores (proportional to second order Taylor expansion of the ipl)
   score.vars <- as.numeric(lapply(1:dim(mat)[2],
-                                  function(j){sum(first.der[[j]]**2/min.second.der[[j]])}))
+                                  function(j){sum(first.der[[j]]**2/neg.second.der[[j]])}))
   
   # Choose the variable that maximises the approximation
   j.star <- which(score.vars == max(score.vars))
 
   # Update coefficients
   betas <- betas
-  betas[, j.star] <- betas[, j.star] + first.der[[j.star]]/min.second.der[[j.star]]
+  betas[, j.star] <- betas[, j.star] + first.der[[j.star]]/neg.second.der[[j.star]]
   
   return(betas)
 }
