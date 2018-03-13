@@ -131,13 +131,8 @@ cv.IplBoost <- function(times, status, mat, lms, w, M, lambda, folds, verbose=FA
         betas=betas, lms=lms, w=w)
   }
 
-  if (parallel){
-    sfExportAll()
-    ipl.cv <- as.numeric(sfLapply(0:M, cv.ipl.m, folds=folds, times=times, status=status, mat=mat,
-                                      mods=cv.mods, lms=lms, w=w, which.ipl=which.ipl))
-    } else {
-      ipl.cv <- as.numeric(lapply(0:M, cv.ipl.m, folds=folds, times=times, status=status, mat=mat,
-                                    mods=cv.mods, lms=lms, w=w, which.ipl=which.ipl))
-      }
+  ipl.cv <- as.numeric(lapply(0:M, cv.ipl.m, folds=folds, times=times, status=status, mat=mat,
+                              mods=cv.mods, lms=lms, w=w, which.ipl=which.ipl))
+  
    return(list(ipl.cv=ipl.cv, opt.m = which(ipl.cv == max(ipl.cv)) - 1))
 }
