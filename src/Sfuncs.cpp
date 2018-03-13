@@ -83,6 +83,8 @@ NumericMatrix compute_S2_j(int j, NumericMatrix risk, NumericVector times, Numer
    
    returns a (n x S) matrix
    */
+  NumericMatrix S2(n, S);
+  
   for (int s=0; s<S; s++){
     for (int i=0; i<n; i++){
       S2(i, s) = mat(i, j-1)*mat(i, j-1)*risk(i, s);
