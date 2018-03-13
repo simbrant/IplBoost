@@ -5,8 +5,8 @@
     .Call(`_IplBoost_compute_u_j`, j, status, mat, times, S0, S1j, n, S, lms, w)
 }
 
-.compute_minI_j <- function(j, status, times, S0, S1j, S2j, n, S, lms, w, lambda) {
-    .Call(`_IplBoost_compute_minI_j`, j, status, times, S0, S1j, S2j, n, S, lms, w, lambda)
+.compute_negI_j <- function(j, status, times, S0, S1j, S2j, n, S, lms, w, lambda) {
+    .Call(`_IplBoost_compute_negI_j`, j, status, times, S0, S1j, S2j, n, S, lms, w, lambda)
 }
 
 .compute_ipl <- function(times, status, mat, betas, lms, w, S, n, p) {

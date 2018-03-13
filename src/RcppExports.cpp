@@ -26,8 +26,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // compute_minI_j
-NumericVector compute_minI_j(int j, NumericVector status, NumericVector times, NumericMatrix S0, NumericMatrix S1j, NumericMatrix S2j, int n, int S, NumericVector lms, double w, NumericVector lambda);
-RcppExport SEXP _IplBoost_compute_minI_j(SEXP jSEXP, SEXP statusSEXP, SEXP timesSEXP, SEXP S0SEXP, SEXP S1jSEXP, SEXP S2jSEXP, SEXP nSEXP, SEXP SSEXP, SEXP lmsSEXP, SEXP wSEXP, SEXP lambdaSEXP) {
+NumericVector compute_negI_j(int j, NumericVector status, NumericVector times, NumericMatrix S0, NumericMatrix S1j, NumericMatrix S2j, int n, int S, NumericVector lms, double w, NumericVector lambda);
+RcppExport SEXP _IplBoost_compute_negI_j(SEXP jSEXP, SEXP statusSEXP, SEXP timesSEXP, SEXP S0SEXP, SEXP S1jSEXP, SEXP S2jSEXP, SEXP nSEXP, SEXP SSEXP, SEXP lmsSEXP, SEXP wSEXP, SEXP lambdaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -42,7 +42,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericVector >::type lms(lmsSEXP);
     Rcpp::traits::input_parameter< double >::type w(wSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type lambda(lambdaSEXP);
-    rcpp_result_gen = Rcpp::wrap(compute_minI_j(j, status, times, S0, S1j, S2j, n, S, lms, w, lambda));
+    rcpp_result_gen = Rcpp::wrap(compute_negI_j(j, status, times, S0, S1j, S2j, n, S, lms, w, lambda));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -127,7 +127,7 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_IplBoost_compute_u_j", (DL_FUNC) &_IplBoost_compute_u_j, 10},
-    {"_IplBoost_compute_minI_j", (DL_FUNC) &_IplBoost_compute_minI_j, 11},
+    {"_IplBoost_compute_negI_j", (DL_FUNC) &_IplBoost_compute_negI_j, 11},
     {"_IplBoost_compute_ipl", (DL_FUNC) &_IplBoost_compute_ipl, 9},
     {"_IplBoost_scale_columns", (DL_FUNC) &_IplBoost_scale_columns, 4},
     {"_IplBoost_compute_S0", (DL_FUNC) &_IplBoost_compute_S0, 4},

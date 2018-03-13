@@ -47,7 +47,7 @@ NumericVector compute_u_j(int j, NumericVector status, NumericMatrix mat, Numeri
 
 
 // [[Rcpp::export]]
-NumericVector compute_minI_j(int j, NumericVector status, NumericVector times, NumericMatrix S0,
+NumericVector compute_negI_j(int j, NumericVector status, NumericVector times, NumericMatrix S0,
                              NumericMatrix S1j, NumericMatrix S2j, int n, int S, NumericVector lms,
                              double w, NumericVector lambda){
   /*

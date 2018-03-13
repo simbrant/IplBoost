@@ -137,24 +137,29 @@ c(403L, 351L, -255867848L, -2132569278L, 1934840782L, 1073087047L,
   S0 <- .compute_S0(as.matrix(risk.s), times, length(times), length(lms))
   
   # Call C++ functions sequentially to compute S1.j and S2.j for each
-  # lanamark for each covariate j (loops over j)
-  S1 <- lapply(1:dim(mat)[2], .compute_S1_j, risk=as.matrix(risk.s), times=times,
-               mat=mat, n=length(times), S=length(lms))
-  S2 <- lapply(1:dim(mat)[2], .compute_S2_j, risk=as.matrix(risk.s), times=times,
-                mat=mat, n=length(times), S=length(lms))
+  # landmark for each covariate j (loops over j)
+  S1 <- lapply(1:dim(mat)[2], .compute_S1_j, risk=as.matrix(risk.s),
+               times=times, mat=mat, n=length(times), S=length(lms))
+  S2 <- lapply(1:dim(mat)[2], .compute_S2_j, risk=as.matrix(risk.s),
+               times=times, mat=mat, n=length(times), S=length(lms))
   
   # Call C++ functions to sequentially compute the first derivative and the
   # negative of the second derivative for each landmark, for each covariate j
-  first.der <- lapply(1:dim(mat)[2], function(j){.compute_u_j(j, status, mat, times,
-                                                          S0, S1[[j]], length(times),
-                                                          length(lms), lms, w)})
+  first.der <- lapply(1:dim(mat)[2],
+                      function(j){.compute_u_j(j, status, mat, times, S0,
+                                               S1[[j]], length(times),
+                                               length(lms), lms, w)})
   
-  min.second.der <- lapply(1:dim(mat)[2], function(j){.compute_minI_j(j, status, times, S0, S1[[j]],
-                                                        S2[[j]], length(times), length(lms),
-                                                        lms, w, lambda)})
+  neg.second.der <- lapply(1:dim(mat)[2],
+                           function(j){.compute_negI_j(j, status, times, S0,
+                                                       S1[[j]], S2[[j]],
+                                                       length(times),
+                                                       length(lms), lms, w,
+                                                       lambda)})
   
   # Compute scores (proportional to second order Taylor expansion of the ipl)
-  score.vars <- as.numeric(lapply(1:dim(mat)[2], function(j){sum(first.der[[j]]**2/min.second.der[[j]])}))
+  score.vars <- as.numeric(lapply(1:dim(mat)[2],
+                                  function(j){sum(first.der[[j]]**2/min.second.der[[j]])}))
   
   # Choose the variable that maximises the approximation
   j.star <- which(score.vars == max(score.vars))
