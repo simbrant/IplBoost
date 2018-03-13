@@ -20,7 +20,7 @@ ipl <- function(t, d, X, betas, lms, w) {
 }
 
 
-IplBoost <- function(times, status, mat, lms, w, M, lambda, verbose=FALSE, standardise=TRUE){
+IplBoost <- function(times, status, mat, lms, w, M, lambda, verbose=FALSE, standardise=TRUE, compute.ipl=TRUE){
   ## This is the main function of the package, that fits sliding landmark models
   ## by boosting van Houwelingens integrated partial likelihood, following the strategy
   ## of CoxBoost.
@@ -98,11 +98,11 @@ cv.IplBoost <- function(times, status, mat, lms, w, M, lambda, folds, verbose=FA
   if (parallel){
     cv.mods <- sfLapply(1:max(folds), function(k){print(k);IplBoost(times=times[folds!=k], status=status[folds!=k],
                                                        mat=mat[folds!=k, ], lms=lms, w=w, M=M, 
-                                                       lambda=lambda, standardise=FALSE)})
+                                                       lambda=lambda, standardise=FALSE, compute.ipl=FALSE)})
   } else {
     cv.mods <- lapply(1:max(folds), function(k){print(k);IplBoost(times=times[folds!=k], status=status[folds!=k],
                                                                     mat=mat[folds!=k, ], lms=lms, w=w, M=M, 
-                                                                    lambda=lambda, standardise=FALSE)})
+                                                                    lambda=lambda, standardise=FALSE, compute.ipl=FALSE)})
   }
   ipl.cv <- vector("numeric", M+1)
   for (m in 0:M){
