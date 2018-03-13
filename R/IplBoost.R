@@ -108,8 +108,7 @@ cv.IplBoost <- function(times, status, mat, lms, w, M, lambda, folds, verbose=FA
   cv.ipl.m <- function(m, folds, times, status, mat, mods, lms, w){
     cvs <- lapply(1:max(folds), function(k) cv.ipl.k(betas=as.matrix(mods[[k]]$estimates[[m+1]]),
                                                 times=times[folds==k], status=status[folds==k], mat=mat[folds==k, ],
-                                                lms=lms, w=w),
-                  mods=mods, times=times, status=status, mat=mat, lms=lms, w=w)
+                                                lms=lms, w=w))
     print(cvs)
     mean(as.numeric(cvs))
   }
