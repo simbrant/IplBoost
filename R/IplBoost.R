@@ -5,22 +5,8 @@
 ##############################################################################################
 
 
-ipl <- function(times, status, mat, betas, lms, w) {
-  ######################################################
-  # Van Houwelingens integrated partial log likelihood #
-  ######################################################
-  pi_s <- mat %*% t(betas)
-  indicator <- t(apply(as.matrix(times), MARGIN = 1, function(t, lm , w){t >= lm & t <= lm + w },
-                       lm = lms, w = w))
-  part1 <- apply(pi_s * indicator, 1, sum)[order(times)]
-  part2 <- apply(log(apply(exp(pi_s[order(-times), ]), 2,
-                           cumsum)[order(-(1:length(times))), ])*indicator,
-                 1, sum)
-  return(sum(status[order(times)]*(part1 - part2)))
-}
-
-
-IplBoost <- function(times, status, mat, lms, w, M, lambda, verbose=FALSE, standardise=TRUE, compute.ipl=TRUE){
+IplBoost <- function(times, status, mat, lms, w, M, lambda, verbose=FALSE, standardise=TRUE,
+                     compute.ipl=TRUE){
   ## This is the main function of the package, that fits sliding landmark models
   ## by boosting van Houwelingens integrated partial likelihood, following the strategy
   ## of CoxBoost.
@@ -46,16 +32,25 @@ IplBoost <- function(times, status, mat, lms, w, M, lambda, verbose=FALSE, stand
   estimates <- vector("list", M+1)
   ipl.vals <- vector("numeric", M+1)
   estimates[[1]] <- sparseMatrix(i=c(1), j=c(1), x = c(0), dims = c(length(lms), dim(mat)[2]))
-  ipl.vals[[1]] <- .compute_ipl(times, status, mat, as.matrix(estimates[[1]]), lms, w, length(lms), length(times), dim(mat)[2])
+  
+  if (compute.ipl){
+    ipl.vals[[1]] <- .compute_ipl(times, status, mat, as.matrix(estimates[[1]]), lms, w, length(lms), length(times), dim(mat)[2])
+  }
   
   # Loop to the given number of iterations, update the coefficients
   for (m in 2:(M+1)){
     if(verbose){
       cat(c("m: ", m-1, "\n"))
     }
+    
+    # Update estimates
     estimates[[m]] <- .IplBoost.iter(times, status, mat, estimates[[m-1]], lms, w, lambda)
-    ipl.vals[[m]] <- .compute_ipl(times, status, mat, as.matrix(estimates[[m]]),
-                                 lms, w, length(lms), length(times), dim(mat)[2])
+
+    # Compute ipl
+    if (compute.ipl){
+      ipl.vals[[m]] <- .compute_ipl(times, status, mat, as.matrix(estimates[[m]]),
+                                    lms, w, length(lms), length(times), dim(mat)[2])
+    }
   }
   
   if (standardise) {
@@ -96,40 +91,35 @@ cv.IplBoost <- function(times, status, mat, lms, w, M, lambda, folds, verbose=FA
   
   # Estimate the K times M models
   if (parallel){
-    cv.mods <- sfLapply(1:max(folds), function(k){print(k);IplBoost(times=times[folds!=k], status=status[folds!=k],
-                                                       mat=mat[folds!=k, ], lms=lms, w=w, M=M, 
-                                                       lambda=lambda, standardise=FALSE, compute.ipl=FALSE)})
+    cv.mods <- sfLapply(1:max(folds), function(k){print(k);IplBoost(times=times[folds!=k],
+                                                                    status=status[folds!=k],
+                                                                    mat=mat[folds!=k, ], lms=lms, w=w
+                                                                    M=M, lambda=lambda, standardise=FALSE,
+                                                                    compute.ipl=FALSE)})
   } else {
-    cv.mods <- lapply(1:max(folds), function(k){print(k);IplBoost(times=times[folds!=k], status=status[folds!=k],
-                                                                    mat=mat[folds!=k, ], lms=lms, w=w, M=M, 
-                                                                    lambda=lambda, standardise=FALSE, compute.ipl=FALSE)})
+    cv.mods <- lapply(1:max(folds), function(k){print(k);IplBoost(times=times[folds!=k],
+                                                                  status=status[folds!=k],
+                                                                  mat=mat[folds!=k, ], lms=lms, w=w,
+                                                                  M=M, lambda=lambda, standardise=FALSE,
+                                                                  compute.ipl=FALSE)})
   }
   
   
   # Compute the cross validated integrated partial likelihood
-  cv.ipl.m <- function(m, folds, times, status, mat, mods, lms, w, which.ipl){
-    if (which.ipl == "R"){
-      cvs <- lapply(1:max(folds), function(k) cv.ipl.k_R(betas=as.matrix(mods[[k]]$estimates[[m+1]]),
-                                                           times=times[folds==k], status=status[folds==k], mat=mat[folds==k, ],
-                                                           lms=lms, w=w))
-    } else if (which.ipl == "C++"){
-      cvs <- lapply(1:max(folds), function(k) cv.ipl.k_cpp(betas=as.matrix(mods[[k]]$estimates[[m+1]]),
-                                                times=times[folds==k], status=status[folds==k], mat=mat[folds==k, ],
-                                                lms=lms, w=w))
-    } else {
-      stop("Wrongly specified ipl method, must be 'R' or 'C++'!")
-    }
-    return(mean(as.numeric(cvs)))
-  }
-  cv.ipl.k_cpp <- function(betas, times, status, mat, lms, w){
+  
+  cv.ipl.k <- function(betas, times, status, mat, lms, w){
     .compute_ipl(times=times, status=status, mat=mat,
                  betas=betas, lms=lms, w=w, S=length(lms),
                  n=length(times), p=dim(mat)[2])
   }
-  cv.ipl.k_R <- function(betas, times, status, mat, lms, w){
-    ipl(times=times, status=status, mat=mat,
-        betas=betas, lms=lms, w=w)
+  
+  cv.ipl.m <- function(m, folds, times, status, mat, mods, lms, w){
+    cvs <- lapply(1:max(folds), function(k) cv.ipl.k(betas=as.matrix(mods[[k]]$estimates[[m+1]]),
+                                                     times=times[folds==k], status=status[folds==k],
+                                                     mat=mat[folds==k, ], lms=lms, w=w))
+    return(mean(as.numeric(cvs)))
   }
+
 
   ipl.cv <- as.numeric(lapply(0:M, cv.ipl.m, folds=folds, times=times, status=status, mat=mat,
                               mods=cv.mods, lms=lms, w=w, which.ipl=which.ipl))
