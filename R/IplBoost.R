@@ -54,7 +54,7 @@ IplBoost <- function(times, status, mat, lms, w, M, lambda, verbose=FALSE, stand
   }
   
   if (standardise) {
-    for (m in 2:M){
+    for (m in 2:(M + 1)){
       estimates[[m]] <- as.matrix(estimates[[m]])
       .scale_columns(estimates[[m]], sds, dim(estimates[[m]])[1], dim(estimates[[m]])[2])
     }
