@@ -84,7 +84,7 @@ NumericVector compute_negI_j(int j, NumericVector status, NumericVector times, N
   for (int s = 0; s<S; s++){
     negI[s] += lambda[s];
   }
-  return I;
+  return negI;
 }
 
 
