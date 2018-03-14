@@ -65,7 +65,7 @@ IplBoost <- function(times, status, mat, lms, w, M, lambda, verbose=FALSE, stand
 
 
 cv.IplBoost <- function(times, status, mat, lms, w, M, lambda, folds, verbose=FALSE,
-                        standardise=TRUE, parallel=FALSE, which.ipl = "R"){
+                        standardise=TRUE, parallel=FALSE){
 
   ## This function performs K-fold cross-valitation for IplBoost,
   ## to tune the number of iterations
@@ -107,6 +107,8 @@ cv.IplBoost <- function(times, status, mat, lms, w, M, lambda, folds, verbose=FA
   
   # Compute the cross validated integrated partial likelihood
   
+  # Define two functions to perform the double for-loop over the models from each
+  # iteration for each fold
   cv.ipl.k <- function(betas, times, status, mat, lms, w){
     .compute_ipl(times=times, status=status, mat=mat,
                  betas=betas, lms=lms, w=w, S=length(lms),
@@ -120,9 +122,9 @@ cv.IplBoost <- function(times, status, mat, lms, w, M, lambda, folds, verbose=FA
     return(mean(as.numeric(cvs)))
   }
 
-
+  # Compute the ipl itself by nested lapply calls
   ipl.cv <- as.numeric(lapply(0:M, cv.ipl.m, folds=folds, times=times, status=status, mat=mat,
                               mods=cv.mods, lms=lms, w=w, which.ipl=which.ipl))
-  
+
    return(list(ipl.cv=ipl.cv, opt.m = which(ipl.cv == max(ipl.cv)) - 1))
 }
