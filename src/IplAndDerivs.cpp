@@ -108,7 +108,7 @@ double compute_ipl(NumericVector times, NumericVector status, NumericMatrix mat,
   for (int s=0; s<S; s++){
     
     for (int i=0; i<n; i++){
-      s0(i, s) = exp(prognostic(i, s))
+      s0(i, s) = exp(prognostic(i, s));
     }
     
     for (int i = n-2; i >= 0; i--){
