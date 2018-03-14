@@ -99,7 +99,7 @@ double compute_ipl(NumericVector times, NumericVector status, NumericMatrix mat,
   for (int s=0; s < S; s++){
     for (int i=0; i<n; i++){
       for (int j=0; j<p; j++){
-        prognostic(i, s) = prognostic(i, s) + mat(i, j)*betas(s, j)
+        prognostic(i, s) = prognostic(i, s) + mat(i, j)*betas(s, j);
       }
     }
   }
