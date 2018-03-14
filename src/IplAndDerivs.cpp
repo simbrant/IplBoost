@@ -4,6 +4,7 @@
 */
 
 #include <Rcpp.h>
+#include <math.h>
 using namespace Rcpp;
 
 // [[Rcpp::export]]
@@ -91,41 +92,44 @@ NumericVector compute_negI_j(int j, NumericVector status, NumericVector times, N
 double compute_ipl(NumericVector times, NumericVector status, NumericMatrix mat, NumericMatrix betas,
                    NumericVector lms, double w, int S, int n, int p) {
   double ipl = 0.0;
+  NumericMatrix prognostic(n, S);
+  NumericMatrix s0(n, S);
   
-  int lms_first_index = 0;
-  for (int s=0; s<S; s++){
-    // compute linear predictor / prognostic index
-    NumericVector pi_s(n, 0.0);
-    NumericVector risk_s(n, 0.0);
-    
-    //  for (int i=0; i<n; i++){
-    //  pi_s[i]  = sum(mat(i, _)*betas(s, _));
-    //}
+  // Compute matrix of prognostic indexes for each landmark
+  for (int s=0; s < S; s++){
     for (int i=0; i<n; i++){
-      double this_pi = 0;
       for (int j=0; j<p; j++){
-        this_pi += mat(i, j)*betas(s, j);
+        prognostic(i, s) = prognostic(i, s) + mat(i, j)*betas(s, j)
       }
-      pi_s[i] = this_pi;
     }
-    
-    risk_s = exp(pi_s); // Rcpp sugar
-    // Backwards cumsum of risk
-    for (int i=n-2; i>=0; i--){
-      risk_s[i] = risk_s[i] + risk_s[i+1];
-    }
-    NumericVector logcumrisksum = log(risk_s);
-    
-    int i = lms_first_index;
-    while (times[i] < lms[s]){
-      i += 1;
-    }
-    lms_first_index = i;
-    while (times[i] <= lms[s] + w){
-      ipl += status[i]*(pi_s[i] - logcumrisksum[i]);
-      i += 1;
-    } 
   }
+  
+  // Compute matrix containing S0 (one column for each landmark)
+  for (int s=0; s<S; s++){
+    
+    for (int i=0; i<n; i++){
+      s0(i, s) = exp(prognostic(i, s))
+    }
+    
+    for (int i = n-2; i >= 0; i--){
+      s0(i, s) = s0(i+1, s) + s0(i, s);
+    }
+  }
+  
+  // Compute the ipl
+  for (int s=0; s<S; s++){
+    int i = 0;
+    
+    while(times[i] < lms[s] & i < n){
+      i = i + 1;
+    }
+    
+    while (times[i] <= lms[s] + w & i < n){
+      ipl = ipl + status[i]*(prognostic(i, s) - log(s0(i, s)));
+      i = i + 1;
+    }
+  }
+  
   return ipl;
 }
 
