@@ -93,7 +93,7 @@ cv.IplBoost <- function(times, status, mat, lms, w, M, lambda, folds, verbose=FA
   if (parallel){
     cv.mods <- sfLapply(1:max(folds), function(k){print(k);IplBoost(times=times[folds!=k],
                                                                     status=status[folds!=k],
-                                                                    mat=mat[folds!=k, ], lms=lms, w=w
+                                                                    mat=mat[folds!=k, ], lms=lms, w=w,
                                                                     M=M, lambda=lambda, standardise=FALSE,
                                                                     compute.ipl=FALSE)})
   } else {
