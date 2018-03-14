@@ -15,7 +15,7 @@ void scale_columns(NumericMatrix mat, NumericVector vec, int m, int n){
   */
   for(int i=0; i<m; i++){
     for(int j=0; j<n; j++){
-      mat(i, j) = mat(i, j)*vec[j];
+      mat(i, j) = mat(i, j)/vec[j];
     }
   }
 }

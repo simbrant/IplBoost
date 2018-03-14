@@ -66,7 +66,7 @@ NumericVector compute_negI_j(int j, NumericVector status, NumericVector times, N
   returns a (n x S) matrix
   */
   
-  NumericVector I(S, 0.0);
+  NumericVector negI(S, 0.0);
   
   int lmsind = 0;
   for (int s=0; s<S; s++){
@@ -77,12 +77,12 @@ NumericVector compute_negI_j(int j, NumericVector status, NumericVector times, N
     }
     lmsind = i;
     while (times[i] <= lms[s] + w & i < n){
-      I[s] += status[i]*((S2j(i, s)*S0(i, s)- S1j(i, s)*S1j(i, s))/(S0(i, s)*S0(i, s)));
+      negI[s] += status[i]*((S2j(i, s)*S0(i, s)- S1j(i, s)*S1j(i, s))/(S0(i, s)*S0(i, s)));
       i += 1;
     } 
   }
   for (int s = 0; s<S; s++){
-    I[s] += lambda[s];
+    negI[s] += lambda[s];
   }
   return I;
 }
@@ -121,12 +121,12 @@ double compute_ipl(NumericVector times, NumericVector status, NumericMatrix mat,
     int i = 0;
     
     while(times[i] < lms[s] & i < n){
-      i = i + 1;
+      i += 1;
     }
     
     while (times[i] <= lms[s] + w & i < n){
       ipl = ipl + status[i]*(prognostic(i, s) - log(s0(i, s)));
-      i = i + 1;
+      i += 1;
     }
   }
   
