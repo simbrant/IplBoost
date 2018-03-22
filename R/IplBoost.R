@@ -4,10 +4,10 @@
 ## cross-validataion                                                                        ##
 ##############################################################################################
 
-IplBoost <- function(times, status, mat, ...) UseMethod("IplBoost")
+IplBoost <- function(times, status, mat, landmarks, w, M, lambda, ...) UseMethod("IplBoost")
 
-IplBoost.default <- function(times, status, mat, lms, w, M, lambda, verbose=FALSE, standardise=TRUE,
-                     compute.ipl=TRUE){
+IplBoost.default <- function(times, status, mat, landmarks, w, M, lambda, verbose=FALSE,
+                             standardise=TRUE, compute.ipl=TRUE){
   ##' IplBoost
   ##' @description This is the main function of the package, that fits sliding landmark models
   ##' by boosting van Houwelingens integrated partial likelihood, following the strategy
@@ -15,7 +15,7 @@ IplBoost.default <- function(times, status, mat, lms, w, M, lambda, verbose=FALS
   ##' @param times A n-dimensional vector of survival times
   ##' @param status A n-dimensional vector of censoring indicators
   ##' @param mat A n x p matrix of covariate values
-  ##' @param lms A S-dimensinal vector of landmark points to produce dynamic 
+  ##' @param landmarks A S-dimensinal vector of landmark points to produce dynamic 
   ##' predictions from
   ##' @param w A number. The "landmark interval width" or how far ahead the 
   ##' survival predictions will be made
