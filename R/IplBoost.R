@@ -32,19 +32,19 @@ IplBoost.default <- function(times, status, mat, landmarks, w, M, lambda, verbos
   ##' @return A vector of the ipl computed for each step.
   ##' @examples
   ##' # Tune the number of iterations via cross validation (see \link{cv.Iplboost})
-  ##' cv.mod <- cv.IplBoost(times, status, design, lms=seq(0, 10, 0.1),
+  ##' cv.mod <- cv.IplBoost(times, status, design, landmarks=seq(0, 10, 0.1),
   ##'                       w=5, M=100, lambda=100,
   ##'                       folds=Kfold(length(times), 10))
   ##' # Fit the model using the tuned number of iterations
-  ##' mod <- IplBoost(times, status, design, lms=seq(0, 10, 0.1),
+  ##' mod <- IplBoost(times, status, design, landmarks=seq(0, 10, 0.1),
   ##'                 w=5, M=cv.mod$opt.m, lambda=100)
   ##' estimates <- mod$estimates[[cv.mod$opt.m + 1]]
 
   
   # Check input
   if (length(lambda) == 1){
-    lambda = rep(lambda, length(lms))
-  } else if (!(length(lms)==length(lambda))) {
+    lambda = rep(lambda, length(landmarks))
+  } else if (!(length(landmarks)==length(lambda))) {
     stop("Must supply a vector of lambdas matching the vector of landmarks")
   }
   
@@ -61,10 +61,11 @@ IplBoost.default <- function(times, status, mat, landmarks, w, M, lambda, verbos
   # Create list of martrices of estimates and a vector of ipl-values, initialise the first entry
   estimates <- vector("list", M+1)
   ipl.vals <- vector("numeric", M+1)
-  estimates[[1]] <- sparseMatrix(i=c(1), j=c(1), x = c(0), dims = c(length(lms), dim(mat)[2]))
+  estimates[[1]] <- sparseMatrix(i=c(1), j=c(1), x = c(0), dims = c(length(landmarks), dim(mat)[2]))
   
   if (compute.ipl){
-    ipl.vals[[1]] <- .compute_ipl(times, status, mat, as.matrix(estimates[[1]]), lms, w, length(lms), length(times), dim(mat)[2])
+    ipl.vals[[1]] <- .compute_ipl(times, status, mat, as.matrix(estimates[[1]]), landmarks, w,
+                                  length(landmarks), length(times), dim(mat)[2])
   }
   
   # Loop to the given number of iterations, update the coefficients
@@ -74,12 +75,12 @@ IplBoost.default <- function(times, status, mat, landmarks, w, M, lambda, verbos
     }
     
     # Update estimates
-    estimates[[m]] <- .IplBoost.iter(times, status, mat, estimates[[m-1]], lms, w, lambda)
+    estimates[[m]] <- .IplBoost.iter(times, status, mat, estimates[[m-1]], landmarks, w, lambda)
 
     # Compute ipl
     if (compute.ipl){
       ipl.vals[[m]] <- .compute_ipl(times, status, mat, as.matrix(estimates[[m]]),
-                                    lms, w, length(lms), length(times), dim(mat)[2])
+                                    landmarks, w, length(landmarks), length(times), dim(mat)[2])
     }
   }
   
@@ -94,7 +95,7 @@ IplBoost.default <- function(times, status, mat, landmarks, w, M, lambda, verbos
 }
 
 
-cv.IplBoost <- function(times, status, mat, lms, w, M, lambda, folds, verbose=FALSE,
+cv.IplBoost <- function(times, status, mat, landmarks, w, M, lambda, folds, verbose=FALSE,
                         standardise=TRUE, parallel=FALSE){
   ##' cv.IplBoost
   ##' @description This function performs K-fold cross-valitation for \link{IplBoost},
@@ -102,7 +103,7 @@ cv.IplBoost <- function(times, status, mat, lms, w, M, lambda, folds, verbose=FA
   ##' @param times A n-dimensional vector of survival times
   ##' @param status A n-dimensional vector of censoring indicators
   ##' @param mat A n x p matrix of covariate values
-  ##' @param lms A S-dimensinal vector of landmark points to produce dynamic
+  ##' @param landmarks A S-dimensinal vector of landmark points to produce dynamic
   ##' predictions from
   ##' @param w A number. The "landmark interval width" or how far ahead the survival
   ##'  predictions will be made
@@ -121,7 +122,7 @@ cv.IplBoost <- function(times, status, mat, lms, w, M, lambda, folds, verbose=FA
   ##' and a number indicating the optimal number of iterations as the second.
   ##' @examples 
   ##' # Tune the number of iterations via cross validation
-  ##' cv.mod <- cv.IplBoost(times, status, design, lms=seq(0, 10, 0.1),
+  ##' cv.mod <- cv.IplBoost(times, status, design, lamdmarks=seq(0, 10, 0.1),
   ##'                       w=5, M=100, lambda=100,
   ##'                       folds=Kfold(length(times), 10))
   ##'                       
@@ -153,14 +154,15 @@ cv.IplBoost <- function(times, status, mat, lms, w, M, lambda, folds, verbose=FA
   if (parallel){
     cv.mods <- sfLapply(1:max(folds), function(k){print(k);IplBoost(times=times[folds!=k],
                                                                     status=status[folds!=k],
-                                                                    mat=mat[folds!=k, ], lms=lms, w=w,
+                                                                    mat=mat[folds!=k, ],
+                                                                    landmarks=landmarks, w=w,
                                                                     M=M, lambda=lambda, standardise=FALSE,
                                                                     compute.ipl=FALSE)})
   } else {
     cv.mods <- lapply(1:max(folds), function(k){print(k);IplBoost(times=times[folds!=k],
                                                                   status=status[folds!=k],
-                                                                  mat=mat[folds!=k, ], lms=lms, w=w,
-                                                                  M=M, lambda=lambda, standardise=FALSE,
+                                                                  mat=mat[folds!=k, ], landmarks=landmarks,
+                                                                  w=w, M=M, lambda=lambda, standardise=FALSE,
                                                                   compute.ipl=FALSE)})
   }
   
@@ -169,22 +171,22 @@ cv.IplBoost <- function(times, status, mat, lms, w, M, lambda, folds, verbose=FA
   
   # Define two functions to perform the double for-loop over the models from each
   # iteration for each fold
-  cv.ipl.k <- function(betas, times, status, mat, lms, w){
+  cv.ipl.k <- function(betas, times, status, mat, landmarks, w){
     .compute_ipl(times=times, status=status, mat=mat,
-                 betas=betas, lms=lms, w=w, S=length(lms),
+                 betas=betas, landmarks=landmarks, w=w, S=length(landmarks),
                  n=length(times), p=dim(mat)[2])
   }
   
-  cv.ipl.m <- function(m, folds, times, status, mat, mods, lms, w){
+  cv.ipl.m <- function(m, folds, times, status, mat, mods, landmarks, w){
     cvs <- lapply(1:max(folds), function(k) cv.ipl.k(betas=as.matrix(mods[[k]]$estimates[[m+1]]),
                                                      times=times[folds==k], status=status[folds==k],
-                                                     mat=mat[folds==k, ], lms=lms, w=w))
+                                                     mat=mat[folds==k, ], landmarks=landmarks, w=w))
     return(mean(as.numeric(cvs)))
   }
 
   # Compute the ipl itself by nested lapply calls
   ipl.cv <- as.numeric(lapply(0:M, cv.ipl.m, folds=folds, times=times, status=status, mat=mat,
-                              mods=cv.mods, lms=lms, w=w))
+                              mods=cv.mods, landmarks=landmarks, w=w))
 
    return(list(ipl.cv=ipl.cv, opt.m = which(ipl.cv == max(ipl.cv)) - 1))
 }
