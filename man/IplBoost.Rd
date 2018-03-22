@@ -42,10 +42,10 @@ A vector of the ipl computed for each step.
 \description{
 This is the main function of the package, that fits sliding landmark models
 by boosting van Houwelingens integrated partial likelihood, following the strategy
-of CoxBoost.
+of \link[CoxBoost]{CoxBoost}.
 }
 \examples{
-# Tune the number of iterations via cross validation (see ?cv.Iplboost)
+# Tune the number of iterations via cross validation (see \\link{cv.Iplboost})
 cv.mod <- cv.IplBoost(times, status, design, lms=seq(0, 10, 0.1),
                       w=5, M=100, lambda=100,
                       folds=Kfold(length(times), 10))

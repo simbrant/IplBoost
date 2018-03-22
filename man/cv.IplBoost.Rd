@@ -35,7 +35,7 @@ printed to the console.}
 
 \item{parallel}{Boolean. Indicates if the cross validation should be performed in parallel.
 relies on the package snowfall. Cluster must be initialised before calling cv.IplBoost in the
-case of this being true, see the snowfall package and ?sfInit.}
+case of this being true, see the \link[snowfall]{snowfall} package and \link[snowfall]{sfInit}.}
 }
 \value{
 A list containg a (M+1)-dimensional vector of the cross validated ipl as the first element,
