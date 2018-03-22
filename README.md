@@ -1,6 +1,7 @@
 # IplBoost
 ```IplBoost``` implements a likelihood boosting algorithm for fitting
-boosted sliding landmark models to survival data.
+boosted sliding landmark models to survival data. For an introduction to
+landmark models, see van Houwelingen, H., & Putter, H. (2011). Dynamic prediction in clinical survival analysis. CRC Press.
 
 ### Installing IplBoost
 
