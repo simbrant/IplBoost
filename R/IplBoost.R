@@ -175,7 +175,7 @@ cv.IplBoost.default <- function(times, status, mat, landmarks, w, M, lambda, fol
   # iteration for each fold
   cv.ipl.k <- function(betas, times, status, mat, landmarks, w){
     .compute_ipl(times=times, status=status, mat=mat,
-                 betas=betas, landmarks=landmarks, w=w, S=length(landmarks),
+                 betas=betas, lms=landmarks, w=w, S=length(landmarks),
                  n=length(times), p=dim(mat)[2])
   }
   
