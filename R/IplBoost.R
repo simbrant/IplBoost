@@ -4,9 +4,9 @@
 ## cross-validataion                                                                        ##
 ##############################################################################################
 
-IplBoost <- function(times, status, mat, landmarks, w, M, lambda, ...) UseMethod(".IplBoost")
+IplBoost <- function(times, status, mat, landmarks, w, M, lambda, ...) UseMethod("IplBoost")
 
-.IplBoost.default <- function(times, status, mat, landmarks, w, M, lambda, verbose=FALSE,
+IplBoost.default <- function(times, status, mat, landmarks, w, M, lambda, verbose=FALSE,
                              standardise=TRUE, compute.ipl=TRUE){
   ##' IplBoost
   ##' @description This is the main function of the package, that fits sliding landmark models
