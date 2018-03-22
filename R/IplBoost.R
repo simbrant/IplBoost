@@ -95,7 +95,9 @@ IplBoost.default <- function(times, status, mat, landmarks, w, M, lambda, verbos
 }
 
 
-cv.IplBoost <- function(times, status, mat, landmarks, w, M, lambda, folds, verbose=FALSE,
+cv.IplBoost <- function(times, status, mat, landmarks, w, M, lambda, folds, ...) UseMethod("cv.IplBoost")
+
+cv.IplBoost.default <- function(times, status, mat, landmarks, w, M, lambda, folds, verbose=FALSE,
                         standardise=TRUE, parallel=FALSE){
   ##' cv.IplBoost
   ##' @description This function performs K-fold cross-valitation for \link{IplBoost},
