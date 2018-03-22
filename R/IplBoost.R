@@ -4,9 +4,9 @@
 ## cross-validataion                                                                        ##
 ##############################################################################################
 
-#IplBoost <- function(times, status, mat, landmarks, w, M, lambda, ...) UseMethod("IplBoost")
+IplBoost <- function(times, status, mat, landmarks, w, M, lambda, ...) UseMethod("IplBoost")
 
-IplBoost <- function(times, status, mat, landmarks, w, M, lambda, verbose=FALSE,
+IplBoost.default <- function(times, status, mat, landmarks, w, M, lambda, verbose=FALSE,
                              standardise=TRUE, compute.ipl=TRUE){
   ##' IplBoost
   ##' @description This is the main function of the package, that fits sliding landmark models
@@ -97,7 +97,7 @@ IplBoost <- function(times, status, mat, landmarks, w, M, lambda, verbose=FALSE,
 
 cv.IplBoost <- function(times, status, mat, landmarks, w, M, lambda, folds, ...) UseMethod("cv.IplBoost")
 
-.cv.IplBoost.default <- function(times, status, mat, landmarks, w, M, lambda, folds, verbose=FALSE,
+cv.IplBoost.default <- function(times, status, mat, landmarks, w, M, lambda, folds, verbose=FALSE,
                         standardise=TRUE, parallel=FALSE){
   ##' cv.IplBoost
   ##' @description This function performs K-fold cross-valitation for \link{IplBoost},
