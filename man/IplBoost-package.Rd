@@ -1,6 +1,5 @@
 \name{IplBoost-package}
 \alias{IplBoost-package}
-\alias{IplBoost}
 \docType{package}
 \title{
   IplBoost: Sliding landmark models fitted via likelihood based boosting.

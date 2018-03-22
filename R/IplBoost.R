@@ -7,10 +7,39 @@
 
 IplBoost <- function(times, status, mat, lms, w, M, lambda, verbose=FALSE, standardise=TRUE,
                      compute.ipl=TRUE){
-  ## This is the main function of the package, that fits sliding landmark models
-  ## by boosting van Houwelingens integrated partial likelihood, following the strategy
-  ## of CoxBoost.
+  ##' IplBoost
+  ##' @description This is the main function of the package, that fits sliding landmark models
+  ##' by boosting van Houwelingens integrated partial likelihood, following the strategy
+  ##' of CoxBoost.
+  ##' @param times A n-dimensional vector of survival times
+  ##' @param status A n-dimensional vector of censoring indicators
+  ##' @param mat A n x p matrix of covariate values
+  ##' @param lms A S-dimensinal vector of landmark points to produce dynamic 
+  ##' predictions from
+  ##' @param w A number. The "landmark interval width" or how far ahead the 
+  ##' survival predictions will be made
+  ##' @param M A number. The number of boosting iterations to perform
+  ##' @param lambda A number or an S-dimensional vector. The regularisation
+  ##'  parameter for the boosting algorithm.
+  ##' @param verbose Boolean. Indicates whether the iteration number should
+  ##'  be printed to the console.
+  ##' @param standardise Boolean. Indicates if covariates should be standardised prior to
+  ##' fitting the model. Coefficient estimates are transformed back to the scale of the data if true.
+  ##' @param compute.ipl Boolean. Indicated if the ipl should be computed for each step.
+  ##' @return A list of (M + 1) elements containing the landmark coefficients as a (S x p)
+  ##' matrix for each iteration.
+  ##' @return A vector of the ipl computed for each step.
+  ##' @examples
+  ##' # Tune the number of iterations via cross validation (see ?cv.Iplboost)
+  ##' cv.mod <- cv.IplBoost(times, status, design, lms=seq(0, 10, 0.1),
+  ##'                       w=5, M=100, lambda=100,
+  ##'                       folds=Kfold(length(times), 10))
+  ##' # Fit the model using the tuned number of iterations
+  ##' mod <- IplBoost(times, status, design, lms=seq(0, 10, 0.1),
+  ##'                 w=5, M=cv.mod$opt.m, lambda=100)
+  ##' estimates <- mod$estimates[[cv.mod$opt.m + 1]]
 
+  
   # Check input
   if (length(lambda) == 1){
     lambda = rep(lambda, length(lms))
@@ -66,10 +95,40 @@ IplBoost <- function(times, status, mat, lms, w, M, lambda, verbose=FALSE, stand
 
 cv.IplBoost <- function(times, status, mat, lms, w, M, lambda, folds, verbose=FALSE,
                         standardise=TRUE, parallel=FALSE){
+  ##' cv.IplBoost
+  ##' @description This function performs K-fold cross-valitation for \link{IplBoost},
+  ##' to tune the number of iterations.
+  ##' @param times A n-dimensional vector of survival times
+  ##' @param status A n-dimensional vector of censoring indicators
+  ##' @param mat A n x p matrix of covariate values
+  ##' @param lms A S-dimensinal vector of landmark points to produce dynamic
+  ##' predictions from
+  ##' @param w A number. The "landmark interval width" or how far ahead the survival
+  ##'  predictions will be made
+  ##' @param M A number. The number maximum of boosting iterations to perform
+  ##' @param lambda A number or an S-dimensional vector. The regularisation parameter 
+  ##' for the boosting algorithm.
+  ##' @param folds A n-dimensional vector that assigns a number between 1 and K to 
+  ##' each observations for cross-validataion.
+  ##' @param verbose Boolean. Indicates whether the iteration number should be 
+  ##' printed to the console.
+  ##' @param standardise Boolean. Indicates if covariates should be standardised.
+  ##' @param parallel Boolean. Indicates if the cross validation should be performed in parallel.
+  ##' relies on the package snowfall. Cluster must be initialised before calling cv.IplBoost in the
+  ##' case of this being true, see the snowfall package and ?sfInit.
+  ##' @return A list containg a (M+1)-dimensional vector of the cross validated ipl as the first element,
+  ##' and a number indicating the optimal number of iterations as the second.
+  ##' @examples 
+  ##' # Tune the number of iterations via cross validation
+  ##' cv.mod <- cv.IplBoost(times, status, design, lms=seq(0, 10, 0.1),
+  ##'                       w=5, M=100, lambda=100,
+  ##'                       folds=Kfold(length(times), 10))
+  ##'                       
+  ##' # Plot the cross-validated likelihood
+  ##' plot(0:100, cv.mod$ipl.cv, "l", lwd=2, xlab="Number of iterations",
+  ##'      ylab="Cross-validated ipl")
+  ##' @references 
 
-  ## This function performs K-fold cross-valitation for IplBoost,
-  ## to tune the number of iterations
-  
   # Make sure the observations are in increasing order
   status <- status[order(times)]
   mat <- mat[order(times), ]

@@ -25,7 +25,7 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// compute_minI_j
+// compute_negI_j
 NumericVector compute_negI_j(int j, NumericVector status, NumericVector times, NumericMatrix S0, NumericMatrix S1j, NumericMatrix S2j, int n, int S, NumericVector lms, double w, NumericVector lambda);
 RcppExport SEXP _IplBoost_compute_negI_j(SEXP jSEXP, SEXP statusSEXP, SEXP timesSEXP, SEXP S0SEXP, SEXP S1jSEXP, SEXP S2jSEXP, SEXP nSEXP, SEXP SSEXP, SEXP lmsSEXP, SEXP wSEXP, SEXP lambdaSEXP) {
 BEGIN_RCPP
