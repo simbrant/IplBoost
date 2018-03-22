@@ -10,7 +10,7 @@ IplBoost <- function(times, status, mat, lms, w, M, lambda, verbose=FALSE, stand
   ##' IplBoost
   ##' @description This is the main function of the package, that fits sliding landmark models
   ##' by boosting van Houwelingens integrated partial likelihood, following the strategy
-  ##' of CoxBoost.
+  ##' of \link[CoxBoost]{CoxBoost}.
   ##' @param times A n-dimensional vector of survival times
   ##' @param status A n-dimensional vector of censoring indicators
   ##' @param mat A n x p matrix of covariate values
@@ -30,7 +30,7 @@ IplBoost <- function(times, status, mat, lms, w, M, lambda, verbose=FALSE, stand
   ##' matrix for each iteration.
   ##' @return A vector of the ipl computed for each step.
   ##' @examples
-  ##' # Tune the number of iterations via cross validation (see ?cv.Iplboost)
+  ##' # Tune the number of iterations via cross validation (see \link{cv.Iplboost})
   ##' cv.mod <- cv.IplBoost(times, status, design, lms=seq(0, 10, 0.1),
   ##'                       w=5, M=100, lambda=100,
   ##'                       folds=Kfold(length(times), 10))
@@ -115,7 +115,7 @@ cv.IplBoost <- function(times, status, mat, lms, w, M, lambda, folds, verbose=FA
   ##' @param standardise Boolean. Indicates if covariates should be standardised.
   ##' @param parallel Boolean. Indicates if the cross validation should be performed in parallel.
   ##' relies on the package snowfall. Cluster must be initialised before calling cv.IplBoost in the
-  ##' case of this being true, see the snowfall package and ?sfInit.
+  ##' case of this being true, see the \link[snowfall]{snowfall} package and \link[snowfall]{sfInit}.
   ##' @return A list containg a (M+1)-dimensional vector of the cross validated ipl as the first element,
   ##' and a number indicating the optimal number of iterations as the second.
   ##' @examples 
