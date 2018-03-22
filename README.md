@@ -11,5 +11,5 @@ install.packages("devtools")
 After doing this, or if you have already installed devtools, you can install
 the IplBoost package by running the R-command:
 ```R
-Devtools::install_github("simbrant/IplBoost")
+devtools::install_github("simbrant/IplBoost")
 ```
