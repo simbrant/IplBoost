@@ -4,7 +4,7 @@
 ## cross-validataion                                                                        ##
 ##############################################################################################
 
-IplBoost <- function(times, status, mat, landmarks, w, M, lambda, ...) UseMethod("IplBoost")
+IplBoost <- function(times, status, mat, landmarks, w, M, lambda, ...) UseMethod(".IplBoost")
 
 .IplBoost.default <- function(times, status, mat, landmarks, w, M, lambda, verbose=FALSE,
                              standardise=TRUE, compute.ipl=TRUE){
