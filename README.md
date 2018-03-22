@@ -1,5 +1,5 @@
 # IplBoost
-```R IplBoost``` implements a likelihood boosting algorithm for fitting
+```IplBoost``` implements a likelihood boosting algorithm for fitting
 boosted sliding landmark models to survival data.
 
 ### Installing IplBoost
