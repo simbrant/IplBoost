@@ -6,6 +6,7 @@
 
 IplBoost <- function(times, status, mat, landmarks, w, M, lambda, ...) UseMethod("IplBoost")
 
+
 IplBoost.default <- function(times, status, mat, landmarks, w, M, lambda, verbose=FALSE,
                              standardise=TRUE, compute.ipl=TRUE){
   ##' IplBoost
@@ -90,8 +91,12 @@ IplBoost.default <- function(times, status, mat, landmarks, w, M, lambda, verbos
       .scale_columns(estimates[[m]], sds, dim(estimates[[m]])[1], dim(estimates[[m]])[2])
     }
   }
+
+  result <- list(estimates=estimates, ipl=ipl.vals, call=match.call())
+  class(result) <- "IplBoost"
   
-  return(list(estimates=estimates, ipl=ipl.vals))
+  return(result)
+  
 }
 
 
@@ -190,5 +195,16 @@ cv.IplBoost.default <- function(times, status, mat, landmarks, w, M, lambda, fol
   ipl.cv <- as.numeric(lapply(0:M, cv.ipl.m, folds=folds, times=times, status=status, mat=mat,
                               mods=cv.mods, landmarks=landmarks, w=w))
 
-   return(list(ipl.cv=ipl.cv, opt.m = which(ipl.cv == max(ipl.cv)) - 1))
+  result <- list(ipl.cv=ipl.cv, opt.m = which(ipl.cv == max(ipl.cv)) - 1, call=match.call())
+  class(result) <- "cv.IplBoost"
+  
+  return(result)
+}
+
+plot.cv.IplBoost <- function(x, ...){
+  plot(0:(length(x$ipl.cv) - 1), x$ipl.cv, lwd=2, "l", main="Cross-validated ipl",
+       ylab="Integrated partial likelihood", xlab="Number of iterations")
+  abline(v=x$opt.m, lty=3)
+  legend(x="bottomright", legend = c("ipl", "Opt. m"), col = c(1,1), lty = c(1, 3),
+         lwd=c(2, 1))
 }
