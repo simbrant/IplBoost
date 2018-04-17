@@ -43,8 +43,8 @@ IplBoost.default <- function(times, status, mat, landmarks, w, M, lambda, verbos
 
   
   # Check input
-  if (length(lambda) == 1){
-    lambda = rep(lambda, length(landmarks))
+  if (length(lambda)==1){
+    lambda <- rep(lambda, length(landmarks))
   } else if (!(length(landmarks)==length(lambda))) {
     stop("Must supply a vector of lambdas matching the vector of landmarks")
   }
@@ -59,14 +59,22 @@ IplBoost.default <- function(times, status, mat, landmarks, w, M, lambda, verbos
   mat <- mat[order(times), ]
   times <- times[order(times)]
   
-  # Create list of martrices of estimates and a vector of ipl-values, initialise the first entry
+  # Add random noise to break ties if nescessary
+  if (length(times) != length(unique(times))){
+    times <- times + abs(rnorm(length(times), 0, 10**(-8)))
+  }
+  
+  # Create list of martrices of estimates and a vector of ipl-values, initialise
+  # the first entry
   estimates <- vector("list", M+1)
   ipl.vals <- vector("numeric", M+1)
-  estimates[[1]] <- sparseMatrix(i=c(1), j=c(1), x = c(0), dims = c(length(landmarks), dim(mat)[2]))
+  estimates[[1]] <- sparseMatrix(i=c(1), j=c(1), x=c(0), dims=c(length(landmarks),
+                                                                dim(mat)[2]))
   
   if (compute.ipl){
-    ipl.vals[[1]] <- .compute_ipl(times, status, mat, as.matrix(estimates[[1]]), landmarks, w,
-                                  length(landmarks), length(times), dim(mat)[2])
+    ipl.vals[[1]] <- .compute_ipl(times, status, mat, as.matrix(estimates[[1]]),
+                                  landmarks, w, length(landmarks), length(times),
+                                  dim(mat)[2])
   }
   
   # Loop to the given number of iterations, update the coefficients
@@ -76,19 +84,22 @@ IplBoost.default <- function(times, status, mat, landmarks, w, M, lambda, verbos
     }
     
     # Update estimates
-    estimates[[m]] <- .IplBoost.iter(times, status, mat, estimates[[m-1]], landmarks, w, lambda)
+    estimates[[m]] <- .IplBoost.iter(times, status, mat, estimates[[m-1]], landmarks,
+                                     w, lambda)
 
     # Compute ipl
     if (compute.ipl){
       ipl.vals[[m]] <- .compute_ipl(times, status, mat, as.matrix(estimates[[m]]),
-                                    landmarks, w, length(landmarks), length(times), dim(mat)[2])
+                                    landmarks, w, length(landmarks), length(times),
+                                    dim(mat)[2])
     }
   }
   
   if (standardise) {
     for (m in 2:(M + 1)){
       estimates[[m]] <- as.matrix(estimates[[m]])
-      .scale_columns(estimates[[m]], sds, dim(estimates[[m]])[1], dim(estimates[[m]])[2])
+      .scale_columns(estimates[[m]], sds, dim(estimates[[m]])[1],
+                     dim(estimates[[m]])[2])
     }
   }
 
@@ -102,8 +113,8 @@ IplBoost.default <- function(times, status, mat, landmarks, w, M, lambda, verbos
 
 cv.IplBoost <- function(times, status, mat, landmarks, w, M, lambda, folds, ...) UseMethod("cv.IplBoost")
 
-cv.IplBoost.default <- function(times, status, mat, landmarks, w, M, lambda, folds, verbose=FALSE,
-                        standardise=TRUE, parallel=FALSE){
+cv.IplBoost.default <- function(times, status, mat, landmarks, w, M, lambda, folds,
+                                verbose=FALSE, standardise=TRUE, parallel=FALSE){
   ##' cv.IplBoost
   ##' @description This function performs K-fold cross-valitation for \link{IplBoost},
   ##' to tune the number of iterations.
@@ -122,10 +133,11 @@ cv.IplBoost.default <- function(times, status, mat, landmarks, w, M, lambda, fol
   ##' @param verbose Boolean. Indicates whether the iteration number should be 
   ##' printed to the console.
   ##' @param standardise Boolean. Indicates if covariates should be standardised.
-  ##' @param parallel Boolean. Indicates if the cross validation should be performed in parallel.
-  ##' relies on the package snowfall. Cluster must be initialised before calling cv.IplBoost in the
-  ##' case of this being true, see the \link[snowfall]{snowfall} package and \link[snowfall]{sfInit}.
-  ##' @return A list containg a (M+1)-dimensional vector of the cross validated ipl as the first element,
+  ##' @param parallel Boolean. Indicates if the cross validation should be performed
+  ##' in parallel. Relies on the package snowfall. Cluster must be initialised before
+  ##' calling cv.IplBoost in the case of this being true, see the
+  ##' \link[snowfall]{snowfall} package and \link[snowfall]{sfInit}. @return A list
+  ##' containg a (M+1)-dimensional vector of the cross validated ipl as the first element,
   ##' and a number indicating the optimal number of iterations as the second.
   ##' @examples 
   ##' # Tune the number of iterations via cross validation
@@ -143,10 +155,6 @@ cv.IplBoost.default <- function(times, status, mat, landmarks, w, M, lambda, fol
   mat <- mat[order(times), ]
   times <- times[order(times)]
   
-  if(standardise){
-    mat <- scale(mat)
-  }
-  
   if(parallel){
     if (sfParallel()) {
       cat("IplBoost Running in parallel mode on", sfCpus(), "nodes.\n")
@@ -162,18 +170,20 @@ cv.IplBoost.default <- function(times, status, mat, landmarks, w, M, lambda, fol
     cv.mods <- sfLapply(1:max(folds), function(k){print(k);IplBoost(times=times[folds!=k],
                                                                     status=status[folds!=k],
                                                                     mat=mat[folds!=k, ],
-                                                                    landmarks=landmarks, w=w,
-                                                                    M=M, lambda=lambda, standardise=FALSE,
+                                                                    landmarks=landmarks,
+                                                                    w=w, M=M, lambda=lambda,
+                                                                    standardise=standardise,
                                                                     compute.ipl=FALSE)})
   } else {
     cv.mods <- lapply(1:max(folds), function(k){print(k);IplBoost(times=times[folds!=k],
                                                                   status=status[folds!=k],
-                                                                  mat=mat[folds!=k, ], landmarks=landmarks,
-                                                                  w=w, M=M, lambda=lambda, standardise=FALSE,
+                                                                  mat=mat[folds!=k, ],
+                                                                  landmarks=landmarks,
+                                                                  w=w, M=M, lambda=lambda,
+                                                                  standardise=standardise,
                                                                   compute.ipl=FALSE)})
   }
-  
-  
+
   # Compute the cross validated integrated partial likelihood
   
   # Define two functions to perform the double for-loop over the models from each
@@ -192,10 +202,12 @@ cv.IplBoost.default <- function(times, status, mat, landmarks, w, M, lambda, fol
   }
 
   # Compute the ipl itself by nested lapply calls
-  ipl.cv <- as.numeric(lapply(0:M, cv.ipl.m, folds=folds, times=times, status=status, mat=mat,
-                              mods=cv.mods, landmarks=landmarks, w=w))
+  ipl.cv <- as.numeric(lapply(0:M, cv.ipl.m, folds=folds, times=times, status=status,
+                              mat=mat, mods=cv.mods, landmarks=landmarks, w=w))
 
-  result <- list(ipl.cv=ipl.cv, opt.m = which(ipl.cv == max(ipl.cv)) - 1, call=match.call())
+  
+  result <- list(ipl.cv=ipl.cv, opt.m = (which(ipl.cv == max(ipl.cv)) - 1)[1],
+                 call=match.call())
   class(result) <- "cv.IplBoost"
   
   return(result)
