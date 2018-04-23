@@ -136,9 +136,10 @@ cv.IplBoost.default <- function(times, status, mat, landmarks, w, M, lambda, fol
   ##' @param parallel Boolean. Indicates if the cross validation should be performed
   ##' in parallel. Relies on the package snowfall. Cluster must be initialised before
   ##' calling cv.IplBoost in the case of this being true, see the
-  ##' \link[snowfall]{snowfall} package and \link[snowfall]{sfInit}. @return A list
-  ##' containg a (M+1)-dimensional vector of the cross validated ipl as the first element,
-  ##' and a number indicating the optimal number of iterations as the second.
+  ##' \link[snowfall]{snowfall} package and \link[snowfall]{sfInit}.
+  ##' @return A list containg a (M+1)-dimensional vector of the cross validated ipl
+  ##' as the first element, and a number indicating the optimal number of iterations
+  ##' as the second.
   ##' @examples 
   ##' # Tune the number of iterations via cross validation
   ##' cv.mod <- cv.IplBoost(times, status, design, lamdmarks=seq(0, 10, 0.1),
@@ -146,9 +147,16 @@ cv.IplBoost.default <- function(times, status, mat, landmarks, w, M, lambda, fol
   ##'                       folds=Kfold(length(times), 10))
   ##'                       
   ##' # Plot the cross-validated likelihood
-  ##' plot(0:100, cv.mod$ipl.cv, "l", lwd=2, xlab="Number of iterations",
-  ##'      ylab="Cross-validated ipl")
-  ##' @references 
+  ##' plot(cv.mod)
+  ##' 
+  ##' # To tune in parallel on 2 cores:
+  ##' library(snowfall)
+  ##' sfInit(parallel=TRUE, cpus=2)
+  ##' cv.mod <- cv.IplBoost(times, status, design, landmarks=seq(0, 10, 0.1),
+  ##'                       w=5, M=100, lambda=100, folds=Kfold(length(times), 10),
+  ##'                       parallel=TRUE)
+  ##' sfStop()
+  ##' 
 
   # Make sure the observations are in increasing order
   status <- status[order(times)]

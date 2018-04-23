@@ -9,8 +9,7 @@ Description: This package fits sliding landmark models via a likelihood-based bo
 License: GPL (>= 2)
 Imports: Rcpp (>= 0.12.15),
          Matrix (>= 1.2-11),
-         snowfall (>= 1.84-6.1),
-         testthat (>= 3.4.2)
+         snowfall (>= 1.84-6.1)
 LinkingTo: Rcpp
 SystemRequirements: C++11
 RoxygenNote: 6.0.1
