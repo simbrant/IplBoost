@@ -10,6 +10,7 @@ IplBoost <- function(times, status, mat, landmarks, w, M, lambda, ...) UseMethod
 IplBoost.default <- function(times, status, mat, landmarks, w, M, lambda, verbose=FALSE,
                              standardise=TRUE, compute.ipl=TRUE){
   ##' IplBoost
+  ##' @aliases IplBoost
   ##' @description This is the main function of the package, that fits sliding landmark models
   ##' by boosting van Houwelingens integrated partial likelihood, following the strategy
   ##' of \link[CoxBoost]{CoxBoost}.
@@ -114,8 +115,10 @@ IplBoost.default <- function(times, status, mat, landmarks, w, M, lambda, verbos
 cv.IplBoost <- function(times, status, mat, landmarks, w, M, lambda, folds, ...) UseMethod("cv.IplBoost")
 
 cv.IplBoost.default <- function(times, status, mat, landmarks, w, M, lambda, folds,
-                                verbose=FALSE, standardise=TRUE, parallel=FALSE){
+                                verbose=FALSE, standardise=TRUE, parallel=FALSE,
+                                cv.type="Verweij"){
   ##' cv.IplBoost
+  ##' @aliases cv.IplBoost
   ##' @description This function performs K-fold cross-valitation for \link{IplBoost},
   ##' to tune the number of iterations.
   ##' @param times A n-dimensional vector of survival times
@@ -137,6 +140,10 @@ cv.IplBoost.default <- function(times, status, mat, landmarks, w, M, lambda, fol
   ##' in parallel. Relies on the package snowfall. Cluster must be initialised before
   ##' calling cv.IplBoost in the case of this being true, see the
   ##' \link[snowfall]{snowfall} package and \link[snowfall]{sfInit}.
+  ##' @param cv.type The type of cross validation measure to be used. Defaults to "Verweij" which
+  ##' refers to the form defined in the paper by Verweij and Van Houwelingen (1993). If cv.type is
+  ##' set to "naive", the measure is merely computed by evaluating the likelihood for the data that
+  ##' is not used to compute each estimate, and then averaged over each fold.
   ##' @return A list containg a (M+1)-dimensional vector of the cross validated ipl
   ##' as the first element, and a number indicating the optimal number of iterations
   ##' as the second.
@@ -161,6 +168,7 @@ cv.IplBoost.default <- function(times, status, mat, landmarks, w, M, lambda, fol
   # Make sure the observations are in increasing order
   status <- status[order(times)]
   mat <- mat[order(times), ]
+  folds <- folds[order(times)]
   times <- times[order(times)]
   
   if(parallel){
@@ -171,6 +179,10 @@ cv.IplBoost.default <- function(times, status, mat, landmarks, w, M, lambda, fol
     else{
       cat("IPLBOOST Running in sequential mode.\n")
     }
+  }
+  
+  if (!(cv.type %in% c("naive", "Verweij"))){
+    stop("cv.type must be either 'naive' or 'Verweij'")
   }
   
   # Estimate the K times M models
@@ -201,18 +213,29 @@ cv.IplBoost.default <- function(times, status, mat, landmarks, w, M, lambda, fol
                  betas=betas, lms=landmarks, w=w, S=length(landmarks),
                  n=length(times), p=dim(mat)[2])
   }
-  
-  cv.ipl.m <- function(m, folds, times, status, mat, mods, landmarks, w){
-    cvs <- lapply(1:max(folds), function(k) cv.ipl.k(betas=as.matrix(mods[[k]]$estimates[[m+1]]),
-                                                     times=times[folds==k], status=status[folds==k],
-                                                     mat=mat[folds==k, ], landmarks=landmarks, w=w))
-    return(mean(as.numeric(cvs)))
-  }
 
+  
+  cv.ipl.m <- function(m, folds, times, status, mat, mods, landmarks, w, cv.type){
+    if (cv.type=="naive"){
+      cvs <- lapply(1:max(folds), function(k) cv.ipl.k(betas=as.matrix(mods[[k]]$estimates[[m+1]]),
+                                                             times=times[folds==k], status=status[folds==k],
+                                                             mat=mat[folds==k, ], landmarks=landmarks, w=w))
+      return(mean(as.numeric(cvs)))
+    } else if (cv.type=="Verweij") {
+      cvs.full <- lapply(1:max(folds), function(k) cv.ipl.k(betas=as.matrix(mods[[k]]$estimates[[m+1]]),
+                                                            times=times, status=status, mat=mat,
+                                                            landmarks=landmarks, w=w))
+      cvs.omit_k <- lapply(1:max(folds), function(k) cv.ipl.k(betas=as.matrix(mods[[k]]$estimates[[m+1]]),
+                                                              times=times[folds!=k], status=status[folds!=k],
+                                                              mat=mat[folds!=k, ], landmarks=landmarks, w=w))
+      return (mean(as.numeric(cvs.full)) - mean(as.numeric(cvs.omit_k)))
+    }
+  }
+  
   # Compute the ipl itself by nested lapply calls
   ipl.cv <- as.numeric(lapply(0:M, cv.ipl.m, folds=folds, times=times, status=status,
-                              mat=mat, mods=cv.mods, landmarks=landmarks, w=w))
-
+                              mat=mat, mods=cv.mods, landmarks=landmarks, w=w, type=type))
+  
   
   result <- list(ipl.cv=ipl.cv, opt.m = (which(ipl.cv == max(ipl.cv)) - 1)[1],
                  call=match.call())
