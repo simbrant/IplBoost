@@ -234,7 +234,7 @@ cv.IplBoost.default <- function(times, status, mat, landmarks, w, M, lambda, fol
   
   # Compute the ipl itself by nested lapply calls
   ipl.cv <- as.numeric(lapply(0:M, cv.ipl.m, folds=folds, times=times, status=status,
-                              mat=mat, mods=cv.mods, landmarks=landmarks, w=w, type=type))
+                              mat=mat, mods=cv.mods, landmarks=landmarks, w=w, cv.type=cv.type))
   
   
   result <- list(ipl.cv=ipl.cv, opt.m = (which(ipl.cv == max(ipl.cv)) - 1)[1],

@@ -9,17 +9,18 @@ Kfold <- function(n, K){
   ## Function that assigns n observations to K
   ## folds of roughly equal size.
   foldids <- c()
-  if ( n > K) {
+  
+  if (n > K) {
+    
     for (k in 1:(ceiling(n/K) - 1)){
       foldids <- c(foldids, 1:K)
     }
     foldids <- c(foldids, sample(x=1:K,
-                                 size= n - (ceiling(n/K)*K - K),
-                                 replace = FALSE))
-  }
-  if (n == K){
+                                 size=n - (ceiling(n/K)*K - K),
+                                 replace=FALSE))
+  } else if (n==K){
     foldids <- 1:n
   }
-  return (sample(x=foldids, size=n, replace = FALSE))  
+  return (sample(x=foldids, size=n, replace=FALSE))  
   
 }
