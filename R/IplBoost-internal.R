@@ -7,14 +7,14 @@
   risk.s <- exp(mat %*% t(betas))
 
   # Call Cpp function to compute S0 for each landmark
-  S0 <- .compute_S0(as.matrix(risk.s), times, length(times), length(lms))
+  S0 <- .compute_S0(as.matrix(risk.s), length(times), length(lms))
   
   # Call C++ functions sequentially to compute S1.j and S2.j for each
   # landmark for each covariate j (loops over j)
   S1 <- lapply(1:dim(mat)[2], .compute_S1_j, risk=as.matrix(risk.s),
-               times=times, mat=mat, n=length(times), S=length(lms))
+               mat=mat, n=length(times), S=length(lms))
   S2 <- lapply(1:dim(mat)[2], .compute_S2_j, risk=as.matrix(risk.s),
-               times=times, mat=mat, n=length(times), S=length(lms))
+               mat=mat, n=length(times), S=length(lms))
   
   # Call C++ functions to sequentially compute the first derivative and the
   # negative of the second derivative for each landmark, for each covariate j

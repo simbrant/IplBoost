@@ -79,48 +79,45 @@ BEGIN_RCPP
 END_RCPP
 }
 // compute_S0
-NumericMatrix compute_S0(NumericMatrix risk, NumericVector times, int n, int S);
-RcppExport SEXP _IplBoost_compute_S0(SEXP riskSEXP, SEXP timesSEXP, SEXP nSEXP, SEXP SSEXP) {
+NumericMatrix compute_S0(NumericMatrix risk, int n, int S);
+RcppExport SEXP _IplBoost_compute_S0(SEXP riskSEXP, SEXP nSEXP, SEXP SSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type risk(riskSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type times(timesSEXP);
     Rcpp::traits::input_parameter< int >::type n(nSEXP);
     Rcpp::traits::input_parameter< int >::type S(SSEXP);
-    rcpp_result_gen = Rcpp::wrap(compute_S0(risk, times, n, S));
+    rcpp_result_gen = Rcpp::wrap(compute_S0(risk, n, S));
     return rcpp_result_gen;
 END_RCPP
 }
 // compute_S1_j
-NumericMatrix compute_S1_j(int j, NumericMatrix risk, NumericVector times, NumericMatrix mat, int n, int S);
-RcppExport SEXP _IplBoost_compute_S1_j(SEXP jSEXP, SEXP riskSEXP, SEXP timesSEXP, SEXP matSEXP, SEXP nSEXP, SEXP SSEXP) {
+NumericMatrix compute_S1_j(int j, NumericMatrix risk, NumericMatrix mat, int n, int S);
+RcppExport SEXP _IplBoost_compute_S1_j(SEXP jSEXP, SEXP riskSEXP, SEXP matSEXP, SEXP nSEXP, SEXP SSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< int >::type j(jSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type risk(riskSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type times(timesSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type mat(matSEXP);
     Rcpp::traits::input_parameter< int >::type n(nSEXP);
     Rcpp::traits::input_parameter< int >::type S(SSEXP);
-    rcpp_result_gen = Rcpp::wrap(compute_S1_j(j, risk, times, mat, n, S));
+    rcpp_result_gen = Rcpp::wrap(compute_S1_j(j, risk, mat, n, S));
     return rcpp_result_gen;
 END_RCPP
 }
 // compute_S2_j
-NumericMatrix compute_S2_j(int j, NumericMatrix risk, NumericVector times, NumericMatrix mat, int n, int S);
-RcppExport SEXP _IplBoost_compute_S2_j(SEXP jSEXP, SEXP riskSEXP, SEXP timesSEXP, SEXP matSEXP, SEXP nSEXP, SEXP SSEXP) {
+NumericMatrix compute_S2_j(int j, NumericMatrix risk, NumericMatrix mat, int n, int S);
+RcppExport SEXP _IplBoost_compute_S2_j(SEXP jSEXP, SEXP riskSEXP, SEXP matSEXP, SEXP nSEXP, SEXP SSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< int >::type j(jSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type risk(riskSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type times(timesSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type mat(matSEXP);
     Rcpp::traits::input_parameter< int >::type n(nSEXP);
     Rcpp::traits::input_parameter< int >::type S(SSEXP);
-    rcpp_result_gen = Rcpp::wrap(compute_S2_j(j, risk, times, mat, n, S));
+    rcpp_result_gen = Rcpp::wrap(compute_S2_j(j, risk, mat, n, S));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -130,9 +127,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_IplBoost_compute_negI_j", (DL_FUNC) &_IplBoost_compute_negI_j, 11},
     {"_IplBoost_compute_ipl", (DL_FUNC) &_IplBoost_compute_ipl, 9},
     {"_IplBoost_scale_columns", (DL_FUNC) &_IplBoost_scale_columns, 4},
-    {"_IplBoost_compute_S0", (DL_FUNC) &_IplBoost_compute_S0, 4},
-    {"_IplBoost_compute_S1_j", (DL_FUNC) &_IplBoost_compute_S1_j, 6},
-    {"_IplBoost_compute_S2_j", (DL_FUNC) &_IplBoost_compute_S2_j, 6},
+    {"_IplBoost_compute_S0", (DL_FUNC) &_IplBoost_compute_S0, 3},
+    {"_IplBoost_compute_S1_j", (DL_FUNC) &_IplBoost_compute_S1_j, 5},
+    {"_IplBoost_compute_S2_j", (DL_FUNC) &_IplBoost_compute_S2_j, 5},
     {NULL, NULL, 0}
 };
 

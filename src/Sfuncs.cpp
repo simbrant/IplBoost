@@ -9,14 +9,13 @@ using namespace Rcpp;
 // [[Rcpp::plugins(cpp11)]]
 
 // [[Rcpp::export]]
-NumericMatrix compute_S0(NumericMatrix risk, NumericVector times, int n,
+NumericMatrix compute_S0(NumericMatrix risk, int n,
                          int S) {
   /*
   Computes S0 = sum_{l in R_i} exp(beta(LM_s)^Tx_l), i = 1,..n, s = 1,..S
       
       Args:
        - risk is a (n x S) matrix (exp(...))
-       - times is an n-dimensional vector
        - n i the length of times (number of observations)
        - S is the number of rows of risk (number of landmarks)
    
@@ -35,7 +34,7 @@ NumericMatrix compute_S0(NumericMatrix risk, NumericVector times, int n,
 }
 
 // [[Rcpp::export]]
-NumericMatrix compute_S1_j(int j, NumericMatrix risk, NumericVector times, NumericMatrix mat,
+NumericMatrix compute_S1_j(int j, NumericMatrix risk, NumericMatrix mat,
                            int n, int S) {
   /*
    Computes S1.j = sum_{l in R_i} x_{lj}exp(beta(LM_s)^Tx_l), i = 1,..n, s = 1,..S
@@ -43,7 +42,6 @@ NumericMatrix compute_S1_j(int j, NumericMatrix risk, NumericVector times, Numer
   Args:
     - j is the covariate index to compute the matrix for
     - risk is a (n x S) matrix (exp(...))
-    - times is an n-dimensional vector
     - n i the length of times (number of observations)
     - S is the number of rows of risk (number of landmarks)
     - mat is the design matrix (n x p)
@@ -68,7 +66,7 @@ NumericMatrix compute_S1_j(int j, NumericMatrix risk, NumericVector times, Numer
 
 
 // [[Rcpp::export]]
-NumericMatrix compute_S2_j(int j, NumericMatrix risk, NumericVector times, NumericMatrix mat, int n,
+NumericMatrix compute_S2_j(int j, NumericMatrix risk, NumericMatrix mat, int n,
                            int S) {
   /*
    Computes S2.j = sum_{l in R_i} x_{lj}**2exp(beta(LM_s)^Tx_l), i = 1,..n, s = 1,..S

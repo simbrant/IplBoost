@@ -17,15 +17,15 @@
     invisible(.Call(`_IplBoost_scale_columns`, mat, vec, m, n))
 }
 
-.compute_S0 <- function(risk, times, n, S) {
-    .Call(`_IplBoost_compute_S0`, risk, times, n, S)
+.compute_S0 <- function(risk, n, S) {
+    .Call(`_IplBoost_compute_S0`, risk, n, S)
 }
 
-.compute_S1_j <- function(j, risk, times, mat, n, S) {
-    .Call(`_IplBoost_compute_S1_j`, j, risk, times, mat, n, S)
+.compute_S1_j <- function(j, risk, mat, n, S) {
+    .Call(`_IplBoost_compute_S1_j`, j, risk, mat, n, S)
 }
 
-.compute_S2_j <- function(j, risk, times, mat, n, S) {
-    .Call(`_IplBoost_compute_S2_j`, j, risk, times, mat, n, S)
+.compute_S2_j <- function(j, risk, mat, n, S) {
+    .Call(`_IplBoost_compute_S2_j`, j, risk, mat, n, S)
 }
 
