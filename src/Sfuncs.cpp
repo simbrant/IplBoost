@@ -74,7 +74,6 @@ NumericMatrix compute_S2_j(int j, NumericMatrix risk, NumericMatrix mat, int n,
    Args:
    - j is the covariate index to compute the matrix for
    - risk is a (n x S) matrix (exp(...))
-   - times is an n-dimensional vector
    - n i the length of times (number of observations)
    - S is the number of rows of risk (number of landmarks)
    - mat is the design matrix (n x p)
