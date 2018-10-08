@@ -4,7 +4,7 @@ Title: IplBoost: Landmark models fitted via likelihood-boosting
 Version: 1.0
 Date: 2018-03-09
 Author: Simon Boge Brant
-Maintainer: Simon Boge Brant <simbran91t@gmail.com>
+Maintainer: Simon Boge Brant <simbrant91@gmail.com>
 Description: This package fits sliding landmark models via a likelihood-based boosting approach.
 License: GPL (>= 2)
 Imports: Rcpp (>= 0.12.15),
