@@ -33,7 +33,7 @@ IplBoost.default <- function(times, status, mat, landmarks, w, M, lambda, verbos
   ##' matrix for each iteration.
   ##' @return A vector of the ipl computed for each step.
   ##' @examples
-  ##' # Tune the number of iterations via cross validation (see \link{cv.Iplboost.default})
+  ##' # Tune the number of iterations via cross validation (see \link{cv.IplBoost})
   ##' cv.mod <- cv.IplBoost(times, status, design, landmarks=seq(0, 10, 0.1),
   ##'                       w=5, M=100, lambda=100,
   ##'                       folds=Kfold(length(times), 10))
