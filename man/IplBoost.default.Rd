@@ -46,7 +46,7 @@ by boosting van Houwelingens integrated partial likelihood, following the strate
 of \link[CoxBoost]{CoxBoost}.
 }
 \examples{
-# Tune the number of iterations via cross validation (see \\code{\\link{cv.IplBoost}})
+# Tune the number of iterations via cross validation (see the documentation for cv.IplBoost)
 cv.mod <- cv.IplBoost(times, status, design, landmarks=seq(0, 10, 0.1),
                       w=5, M=100, lambda=100,
                       folds=Kfold(length(times), 10))
