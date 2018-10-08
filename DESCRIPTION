@@ -12,4 +12,4 @@ Imports: Rcpp (>= 0.12.15),
          snowfall (>= 1.84-6.1)
 LinkingTo: Rcpp
 SystemRequirements: C++11
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.0
